@@ -22,7 +22,7 @@ public class AuthContoller {
     private UsuarioReposirotory usuarioReposirotory;
 
     //errado
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<String> efetuarLogin(@RequestBody LoginDTO loginRequest){
         System.out.println("chegou no controller");
         var email = loginRequest.email();
