@@ -8,7 +8,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -27,9 +29,14 @@ public class SecuirtyFilter extends OncePerRequestFilter {
     private UsuarioReposirotory repository;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        Authentication existingAuth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println(existingAuth);
+        if (existingAuth instanceof JwtAuthenticationToken && existingAuth.isAuthenticated()) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         var token= recuperaToken(request);
-        if (token != null && !verificaEmissaoDoTokenKeycloack(token)) {
-            //PROCESSA COM MEU FILTRO
+        if (token != null && !verificaEmissaoDoTokenKeycloack(token)){
             String email = tokenService.pegarUsuarioDoToken(token);
             var usuario = repository.findByLogin(email);
             if (usuario != null) {

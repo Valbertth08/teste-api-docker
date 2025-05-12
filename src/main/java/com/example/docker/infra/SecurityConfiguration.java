@@ -23,15 +23,18 @@ public class SecurityConfiguration {
     @Order(1)
     public SecurityFilterChain filtroAdmin(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/usuario/**") // Ex: /keycloak/usuario
+                .securityMatcher("/usuario/listar") // Ex: /keycloak/usuario
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/usuario/listar").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
         return http.build();
     }
+
     @Bean
     @Order(2)
     public SecurityFilterChain filtroAluno(HttpSecurity http) throws Exception {
@@ -41,14 +44,12 @@ public class SecurityConfiguration {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers("/aluno").hasRole("ADMIN")
+                        .requestMatchers("/aluno/pegar").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(secuirtyFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
-
 
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {

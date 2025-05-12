@@ -12,8 +12,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/aluno")
 public class AlunoController {
 
-   @GetMapping
+   @GetMapping("/pegar")
     public ResponseEntity<String> mostrarMensagem(){
-        return ResponseEntity.ok("controller de usuario comum ");
+        return ResponseEntity.ok("essa rota pertence a aluno ");
+    }
+    @GetMapping("/admim")
+    public ResponseEntity<String> mostrarMensagemAdmin(){
+        return ResponseEntity.ok("essa rota pertence a admin ");
     }
 }

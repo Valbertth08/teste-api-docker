@@ -28,7 +28,7 @@ public class TokenService {
 
     }
     public String pegarUsuarioDoToken(String token){
-        System.out.println("chegou aqui");
+        System.out.println("chegou aqui no token service validador");
         try{
             var algoritimo= Algorithm.HMAC256("12345");
             return JWT.require(algoritimo)

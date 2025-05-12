@@ -27,7 +27,6 @@ public class AuthContoller {
         System.out.println("chegou no controller");
         var email = loginRequest.email();
         UserDetails usuario = usuarioReposirotory.findByLogin(email);
-
         if (usuario == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não encontrado");
         }
