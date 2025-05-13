@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.example.docker.domain.Usuario;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -13,9 +14,13 @@ import java.time.ZoneOffset;
 
 @Service
 public class TokenService {
+
+    @Value("${jwt.secret}")
+    private String secret;
+
     public String gerarToken(Usuario usuario){
         try {
-            var algortimo= Algorithm.HMAC256("12345");
+            var algortimo= Algorithm.HMAC256(secret);
             return JWT.create()
                     .withIssuer("API barberia")
                     .withSubject(usuario.getLogin())
@@ -30,7 +35,7 @@ public class TokenService {
     public String pegarUsuarioDoToken(String token){
         System.out.println("chegou aqui no token service validador");
         try{
-            var algoritimo= Algorithm.HMAC256("12345");
+            var algoritimo= Algorithm.HMAC256(secret);
             return JWT.require(algoritimo)
                     .withIssuer("API barberia")
                     .build()

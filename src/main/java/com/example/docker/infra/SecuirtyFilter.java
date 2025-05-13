@@ -20,58 +20,58 @@ import java.util.Base64;
 import java.util.Map;
 
 @Component
-public class SecuirtyFilter extends OncePerRequestFilter {
+public class SecuirtyFilter  {
 
-    @Autowired
-    private TokenService tokenService;
-
-    @Autowired
-    private UsuarioReposirotory repository;
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        Authentication existingAuth = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println(existingAuth);
-        if (existingAuth instanceof JwtAuthenticationToken && existingAuth.isAuthenticated()) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-        var token= recuperaToken(request);
-        if (token != null && !verificaEmissaoDoTokenKeycloack(token)){
-            String email = tokenService.pegarUsuarioDoToken(token);
-            var usuario = repository.findByLogin(email);
-            if (usuario != null) {
-                var authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
-                System.out.println(authentication);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        }
-        filterChain.doFilter(request, response);
-    }
-    private boolean verificaEmissaoDoTokenKeycloack(String token) {
-        try {
-            String[] partes = token.split("\\.");
-            if (partes.length != 3) return false;
-            String payload = new String(Base64.getUrlDecoder().decode(partes[1]));
-            ObjectMapper mapper = new ObjectMapper();
-            var body = mapper.readValue(payload, Map.class);
-
-            String issuer = (String) body.get("iss");
-            boolean realm_access = body.containsKey("realm_access");
-            return (issuer != null && issuer.contains("realms")) || realm_access;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    private String recuperaToken(HttpServletRequest request) {
-        var authorizationHeader = request.getHeader("Authorization");
-        System.out.println(authorizationHeader);
-        if (authorizationHeader != null) {
-            return authorizationHeader.replace("Bearer ", "");
-        } else {
-            return null;
-        }
-    }
+//    @Autowired
+//    private TokenService tokenService;
+//
+//    @Autowired
+//    private UsuarioReposirotory repository;
+//    @Override
+//    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+//        Authentication existingAuth = SecurityContextHolder.getContext().getAuthentication();
+//        System.out.println(existingAuth);
+//        if (existingAuth instanceof JwtAuthenticationToken && existingAuth.isAuthenticated()) {
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
+//        var token= recuperaToken(request);
+//        if (token != null && !verificaEmissaoDoTokenKeycloack(token)){
+//            String email = tokenService.pegarUsuarioDoToken(token);
+//            var usuario = repository.findByLogin(email);
+//            if (usuario != null) {
+//                var authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
+//                System.out.println(authentication);
+//                SecurityContextHolder.getContext().setAuthentication(authentication);
+//            }
+//        }
+//        filterChain.doFilter(request, response);
+//    }
+//    private boolean verificaEmissaoDoTokenKeycloack(String token) {
+//        try {
+//            String[] partes = token.split("\\.");
+//            if (partes.length != 3) return false;
+//            String payload = new String(Base64.getUrlDecoder().decode(partes[1]));
+//            ObjectMapper mapper = new ObjectMapper();
+//            var body = mapper.readValue(payload, Map.class);
+//
+//            String issuer = (String) body.get("iss");
+//            boolean realm_access = body.containsKey("realm_access");
+//            return (issuer != null && issuer.contains("realms")) || realm_access;
+//        } catch (Exception e) {
+//            return false;
+//        }
+//    }
+//
+//    private String recuperaToken(HttpServletRequest request) {
+//        var authorizationHeader = request.getHeader("Authorization");
+//        System.out.println(authorizationHeader);
+//        if (authorizationHeader != null) {
+//            return authorizationHeader.replace("Bearer ", "");
+//        } else {
+//            return null;
+//        }
+//    }
 
 
 }
